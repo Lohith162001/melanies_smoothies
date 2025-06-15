@@ -30,28 +30,17 @@ ingredients_list = st.multiselect(
     my_dataframe,
     max_selections=5
 )
-
-# Only show button if there's a smoothie name and ingredients
-if name_on_order and ingredients_list:
-    ingredients_string = ' '.join(ingredients_list)  # Cleaner than using a loop
-
-    if st.button('Submit Order'):
-        # Build and run the INSERT statement
-        insert_stmt = f"""
-        insert into smoothies.public.orders(ingredients, name_on_order)
-        values ('{ingredients_string}', '{name_on_order}')
-        """
-        session.sql(insert_stmt).collect()
-        st.success(f'✅ Your Smoothie is ordered, {name_on_order}!')
-
 import requests
 
 if ingredients_list:
     ingredients_string = ''
+    
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
+        
         search_on = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
         #st.write('The search value for ', fruit_chosen, ' is ', search_on, '.')
+        
         st.subheader(fruit_chosen + 'Nutrition Information')
         fruityvice_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + search_on)
         fv_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
